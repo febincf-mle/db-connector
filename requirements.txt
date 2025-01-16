@@ -1,0 +1,3 @@
+certifi==2024.12.14
+dnspython==2.7.0
+pymongo==4.10.1
