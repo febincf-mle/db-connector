@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+
+# remove after commit
+.github
+
 # Distribution / packaging
 .Python
 build/

@@ -1,7 +1,6 @@
 from typing import Dict, Any, List
 
 import certifi
-from pymongo.mongo_client import MongoClient
 from pymongo import MongoClient, errors
 
 
@@ -41,7 +40,7 @@ class ConnectMongoDB:
 
         :param database_name: Name of the database to use.
         """
-        if not self.client:
+        if self.client is None:
             raise ConnectionError("Client is not connected. Call `connect()` first.")
         try:
             self.database = self.client[database_name]
@@ -55,7 +54,7 @@ class ConnectMongoDB:
 
         :param collection_name: Name of the collection to use.
         """
-        if not self.database:
+        if self.database is None:
             raise ConnectionError("Database is not set. Call `set_database()` first.")
         try:
             self.collection = self.database[collection_name]
@@ -70,7 +69,7 @@ class ConnectMongoDB:
         :param document: The document to insert (as a dictionary).
         :return: The inserted document's ID.
         """
-        if not self.collection:
+        if self.collection is None:
             raise ConnectionError("Collection is not set. Call `set_collection()` first.")
         try:
             result = self.collection.insert_one(document)
@@ -86,7 +85,7 @@ class ConnectMongoDB:
         :param documents: A list of documents to insert.
         :return: A list of inserted document IDs.
         """
-        if not self.collection:
+        if self.collection is None:
             raise ConnectionError("Collection is not set. Call `set_collection()` first.")
         try:
             result = self.collection.insert_many(documents)
@@ -103,16 +102,16 @@ class ConnectMongoDB:
         :param limit: Maximum number of documents to fetch (default: 0, no limit).
         :return: A list of matching documents.
         """
-        if not self.collection:
+        if self.collection is None:
             raise ConnectionError("Collection is not set. Call `set_collection()` first.")
         try:
             query = query or {}
             cursor = self.collection.find(query)
 
-            if len(limit) > 0:
-                cursor = cursor.limit(5)
+            if limit > 0:
+                cursor = cursor.limit(limit)
             
-            documents = cursor.to_list()
+            documents = list(cursor)
             print(f"Fetched {len(documents)} document(s).")
             return documents
         except Exception as e:
@@ -126,7 +125,7 @@ class ConnectMongoDB:
         :param update_data: The data to update (e.g., {"$set": {"field": "value"}}).
         :return: The count of modified documents.
         """
-        if not self.collection:
+        if self.collection is None:
             raise ConnectionError("Collection is not set. Call `set_collection()` first.")
         try:
             result = self.collection.update_one(query, update_data)
@@ -143,7 +142,7 @@ class ConnectMongoDB:
         :param update_data: The data to update (e.g., {"$set": {"field": "value"}}).
         :return: The count of modified documents.
         """
-        if not self.collection:
+        if self.collection is None:
             raise ConnectionError("Collection is not set. Call `set_collection()` first.")
         try:
             result = self.collection.update_many(query, update_data)
@@ -159,7 +158,7 @@ class ConnectMongoDB:
         :param query: The query filter to match the document.
         :return: The count of deleted documents.
         """
-        if not self.collection:
+        if self.collection is None:
             raise ConnectionError("Collection is not set. Call `set_collection()` first.")
         try:
             result = self.collection.delete_one(query)
@@ -175,7 +174,7 @@ class ConnectMongoDB:
         :param query: The query filter to match the documents (default: None, deletes all).
         :return: The count of deleted documents.
         """
-        if not self.collection:
+        if self.collection is None:
             raise ConnectionError("Collection is not set. Call `set_collection()` first.")
         try:
             query = query or {}
